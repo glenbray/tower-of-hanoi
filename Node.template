@@ -1,0 +1,74 @@
+//============================================================================
+// Name        : LinkedList.h
+// Author      : Glen Bray
+//============================================================================
+
+template<class T>
+Node<T>::~Node() {
+
+}
+
+template<class T>
+Node<T>::Node(const T& data)
+{
+	previous = NULL; // previous
+	next = NULL; // next
+	this->data = data; //data
+}
+
+template<class T>
+Node<T>::Node(const T& data, Node<T>* next)
+{
+	this->data = data; // data
+	this->next = next; // next
+	this->previous = NULL; // previous
+}
+
+template<class T>
+Node<T>::Node(const T& data, Node<T>* next, Node<T>* previous)
+{
+	this->data = data; // data
+	this->next = next; // next node
+	this->previous = previous; // previous node
+}
+
+template<class T>
+T& Node<T>::getData()
+{
+	return this->data; // return data
+}
+
+template<class T>
+T& NODE::Node<T>::getData() const {
+	return &this->data;
+}
+
+template<class T>
+Node<T>* Node<T>::getNext()
+{
+	return this->next; // get next link
+}
+
+template<class T>
+Node<T>* Node<T>::getPrevious()
+{
+	return this->previous; // get prevoius link
+}
+
+template<class T>
+void Node<T>::setData(const T& data)
+{
+	this->data = data; // set data
+}
+
+template<class T>
+void Node<T>::setNext(Node<T>* node)
+{
+	this->next = node; // set next
+}
+
+template<class T>
+void Node<T>::setPrevious(Node<T>* node)
+{
+	this->previous = node; // set previous
+}

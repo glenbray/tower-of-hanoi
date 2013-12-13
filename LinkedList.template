@@ -1,0 +1,301 @@
+//============================================================================
+// Name        : LinkedList.h
+// Author      : Glen Bray
+//============================================================================
+
+template<class T>
+LinkedList<T>::~LinkedList()
+{
+	while(head != NULL) // Iterate over list
+		this->removeHead(); // Remove head
+}
+
+template<class T>
+LinkedList<T>::LinkedList()
+{
+	this->head = NULL;
+	this->tail = NULL;
+	this->length = 0;
+}
+
+template<class T>
+LinkedList<T>::LinkedList(const T& data)
+{
+	this->length = 0;
+	this->addHead(data);
+	this->tail = NULL;
+}
+
+template<class T>
+typename LinkedList<T>::size_type& LinkedList<T>::count() const
+{
+	size_type count = 0;
+	count = this->length;
+	return count;
+}
+
+template<class T>
+void LinkedList<T>::addHead(const T& data)
+{
+	if(this->head == NULL) //Check if head is null if so instantiate head
+		this->head = new NODE::Node<T>(data);
+	else
+	{
+		NODE::Node<T>* newNode = NULL;
+
+		if(this->head->getNext() == NULL) // if head points to null instantiate tail and point head to tail and point tail to head
+		{
+			this->tail = this->head;
+			newNode = new NODE::Node<T>(data, this->tail);
+			this->head = newNode;
+			this->tail->setPrevious(this->head);
+		}
+		else //Move head to another node then set head to a new node then point head to the temp node
+		{
+			NODE::Node<T>* tempNode = head;
+			newNode = new NODE::Node<T>(data, tempNode);
+			this->head = newNode;
+			tempNode->setPrevious(this->head);
+		}
+	}
+	++this->length;
+}
+
+template<class T>
+void LinkedList<T>::addPosition(const size_type& position, const T& data)
+{
+	NODE::Node<T>* cursor = this->head;
+	NODE::Node<T>* newNode = NULL;
+
+	if(this->head == NULL)// if head is null create a new head and return
+	{
+		this->addHead(data);
+		return;
+	}
+
+	int count = 0;
+
+	while(cursor != NULL) // Iterate over list count each iteration and add new node when at correct position
+	{
+		if(count == position)
+		{
+			newNode = new NODE::Node<T>(data, cursor, cursor->getPrevious());
+			NODE::Node<T>* prev = cursor->getPrevious();
+			prev->setNext(newNode);
+			++this->length;
+			return;
+		}
+		++count;
+		cursor = cursor->getNext();
+
+	}
+	this->addTail(data);
+
+}
+
+template<class T>
+void LinkedList<T>::addTail(const T& data)
+{
+	if(this->head == NULL) //if head is null then create a new head
+		this->addHead(data);
+	else
+	{
+		if(this->head->getNext() == NULL && this->tail == NULL)
+		{
+			this->tail = new NODE::Node<T>(data, NULL , this->head);
+			this->head->setNext(this->tail);
+		}
+		else
+		{
+			NODE::Node<T>* temp = tail;
+			this->tail = new NODE::Node<T>(data, NULL, temp);
+			temp->setNext(this->tail);
+		}
+		++this->length;
+	}
+}
+
+template<class T>
+T* LinkedList<T>::getHeadData() const
+{
+	if(head == NULL)
+		return NULL;
+	return &this->head->getData();
+}
+
+template<class T>
+T* LinkedList<T>::getTailData() const
+{
+	if(tail == NULL)
+		return NULL;
+	return this->tail->getData();
+}
+
+template<class T>
+T* LinkedList<T>::getData(const int& position) const {
+
+	NODE::Node<T>* cursor = head;
+	int count = 0;
+
+	while(cursor != NULL) // Iterate over list until position
+	{
+		if(count == position)
+			return &cursor->getData();
+
+		++count;
+		cursor = cursor->getNext();
+	}
+	return NULL;
+}
+
+template<class T>
+void LinkedList<T>::removeHead() {
+
+	if(this->head != NULL)
+	{
+		if(this->head->getNext() != NULL) // Delete head node if next is not null then set next as the new head
+		{
+			NODE::Node<T>* temp = this->head;
+
+			this->head = this->head->getNext();
+			this->head->setPrevious(NULL);
+			delete temp;
+		}
+		else // remove head
+		{
+			delete head->getNext();
+			head = NULL;
+		}
+		--this->length;
+	}
+}
+
+template<class T>
+void LinkedList<T>::removeAtPosition(const size_type& position) {
+	NODE::Node<T>* cursor = head;
+
+	size_type count = 0;
+
+	if(position == 0) //If position is 0 remove head
+	{
+		this->removeHead();
+		return;
+	}
+
+	while(cursor != NULL) //iterate over list and delete node at position
+	{
+		if(position == count)
+		{
+			if(cursor == tail) // if node is tail delete tail
+			{
+				this->removeTail();
+				return;
+			}
+
+			NODE::Node<T>* previous = cursor->getPrevious();
+			NODE::Node<T>* next = cursor->getNext();
+
+			previous->setNext(next);
+			next->setPrevious(previous);
+			delete cursor;
+			--this->length;
+			return;
+		}
+
+		++count;
+		cursor = cursor->getNext();
+	}
+}
+
+template<class T>
+void LinkedList<T>::removeTail() {
+	if(this->tail != NULL)
+	{
+		NODE::Node<T>* previous = tail->getPrevious();
+
+		if(previous == this->head) //delete tail if head is previous
+		{
+			delete tail;
+			tail = NULL;
+			this->head->setNext(NULL);
+		}
+		else // set tails previous as tail
+		{
+			tail = NULL;
+			tail = previous;
+			previous = previous->getPrevious();
+			previous->setNext(tail);
+			tail->setNext(NULL);
+		}
+		--this->length;
+	}
+}
+
+template<class T>
+void LinkedList<T>::removeAllOccurences(const T& data) {
+
+	NODE::Node<T>* cursor = head;
+
+	while(cursor != NULL)
+	{
+		if(data == cursor->getData()) // check if data is the same then delete
+		{
+
+			if(cursor == head) // if head delete head
+			{
+				this->removeHead();
+				cursor = head;
+				continue;
+			}
+			if(cursor == tail) // if cursor is tail delete tail
+			{
+				this->removeTail();
+				return;
+			}
+
+			NODE::Node<T>* previous = cursor->getPrevious();
+			NODE::Node<T>* next = cursor->getNext();
+
+			delete cursor; //Deallocate memory
+
+			previous->setNext(next);
+			next->setPrevious(previous);
+			cursor = previous;
+			--this->length;
+		}
+		cursor = cursor->getNext();
+	}
+}
+
+template<class T>
+LinkedList<T>& LinkedList<T>::operator +=(const LinkedList& copy)
+{
+	NODE::Node<T>* cursor = copy.head;
+	int count = 0;
+
+	while(cursor != NULL)
+	{
+		this->addTail(*copy.getData(count)); // add data to tail
+		cursor = cursor->getNext();
+		++count;
+	}
+	return(*this);
+}
+
+template<class T>
+std::ostream& operator <<(std::ostream& out, const LINKEDLIST::LinkedList<T>& ll) {
+
+	NODE::Node<T>* cursor = ll.head;
+	int count = 0;
+
+	while(cursor != NULL)
+	{
+		out << *ll.getData(count) << " ";
+
+		++count;
+		cursor = cursor->getNext();
+	}
+	out << "\nCount: " << ll.count() << "\n\n";
+
+	return out;
+}

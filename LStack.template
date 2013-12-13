@@ -1,0 +1,48 @@
+//============================================================================
+// Name        : LinkedList.h
+// Author      : Glen Bray
+//============================================================================
+
+template<class T>
+LSTACK::LStack<T>::~LStack() {
+	delete this->ll; // Deallocate memory
+}
+
+template<class T>
+LSTACK::LStack<T>::LStack() {
+	this->ll = new LINKEDLIST::LinkedList<T>();
+}
+
+template<class T>
+void LSTACK::LStack<T>::push(const T& data) {
+	this->ll->addHead(data);
+}
+
+template<class T>
+T LSTACK::LStack<T>::pop() {
+	T pop = *this->ll->getHeadData(); // Get head data
+	this->ll->removeHead(); // Removes top of list
+	return pop; // return temp pop variable
+}
+
+template<class T>
+std::size_t LSTACK::LStack<T>::size() {
+	return this->ll->count(); // Return size of stack
+}
+
+
+template<class T>
+T* LSTACK::LStack<T>::top() const {
+
+	if(this->ll->getHeadData() == NULL) // Check if head is null
+		return NULL;
+	return this->ll->getHeadData(); // Return head data
+
+}
+
+template<class T>
+LSTACK::LStack<T>& LSTACK::LStack<T>::operator +=(const LSTACK::LStack<T>& original) {
+
+	*this->ll += *original.ll; // Deep copy stack
+	return *this;
+}
